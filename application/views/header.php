@@ -26,3 +26,4 @@ if($this->session->userdata('username')){
 }
 
 $this->breadcrumbs->generate_breadcrumbs();
+echo br(1);

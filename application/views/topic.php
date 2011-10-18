@@ -2,7 +2,7 @@
 
 echo heading($topic[0]['title']);
 
-echo $topic[0]['author'];
+echo anchor('user/user_profile/'.$topic[0]['author'],$topic[0]['author']);
 echo br(1);
 echo $topic[0]['op'];
 echo br(2);

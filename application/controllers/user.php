@@ -24,7 +24,7 @@ class User extends CI_Controller{
 					   'password' => $this->input->post('password')
 					   );
 		if($this->database_model->user_login($user)){
-			redirect('user/index', 'refresh');
+			redirect('user/', 'refresh');
 		}else{
 			echo 'Username or password was incorrect.';
 		}
@@ -32,13 +32,15 @@ class User extends CI_Controller{
 	
 	public function user_profile(){
 		$data['current_view'] = 'user_profile';
+		$data['friends'] = $this->database_model->get_friends();
+		$data['messages'] = $this->database_model->get_messages();
 		$data['profile'] = $this->database_model->get_profile();
 		$this->load->view('template', $data);
 	}
 	
 	public function user_logout(){
 		$this->session->sess_destroy();
-		redirect('user/index', 'refresh');
+		redirect('user/', 'refresh');
 	}
 	
 	public function create_user(){
@@ -86,15 +88,15 @@ class User extends CI_Controller{
 						   );
 		$this->database_model->ban_user($ban_user);
 		$this->database_model->send_message($ban_user);
-		redirect('user/index','refresh');
+		redirect('user/','refresh');
 	}
 	
-	function block_user(){
-		$block_user = array ('user_wishing_to_block' => $this->input->post('user'),
-							 'user_to_block' => $this->input->post('blocked')
+	function ignore_user(){
+		$ignore_user = array ('user_wishing_to_ignore' => $this->session->userdata('username'),
+							 'user_to_ignore' => $this->uri->segment(3)
 							 );
-		$this->database_model->block_user($user_to_block);
-		redirect('user/index', 'refresh');
+		$this->database_model->ignore_user($ignore_user);
+		redirect('user/', 'refresh');
 	}
 	
 	public function new_message(){
@@ -109,13 +111,53 @@ class User extends CI_Controller{
 						  'message' => $this->input->post('message')
 						  );
 		$this->database_model->send_message($message);
-		redirect('user/index','refresh');
+		redirect('user/','refresh');
+	}
+	
+	function view_message(){
+		$message = $this->uri->segment(3);
+		$this->database_model->message_read($message);
+		$data['message'] = $this->database_model->get_single_message($message);
+		$data['current_view'] = 'message';
+		$this->load->view('template', $data);
 	}
 	
 	public function user_inbox(){
 		$data['current_view'] = 'user_inbox';
 		$data['messages'] = $this->database_model->get_messages();
 		$this->load->view('template', $data);
+	}
+	
+	public function view_friends(){
+		$user = $this->session->userdata('username');
+		$data['current_view'] = 'friends_list';
+		$data['friends'] = $this->database_model->get_friends($user);
+		$data['friend_requests'] = $this->database_model->get_friend_requests();
+		$this->load->view('template', $data);
+	}
+	
+	function friend_request(){
+		$friend_request = array('user1' => $this->session->userdata('username'),
+								'user2' => $this->input->post('user2')
+								);
+		$this->database_model->friend_request($friend_request);
+		redirect('user/user_profile/'.$friend_request['user2'],'refresh');
+	}
+	
+	function friendship(){
+		$friendship = array ('user1' => $this->session->userdata('username'),
+							 'user2' => $this->input->post('user2')
+							 );
+		$this->database_model->create_friendship($friendship);
+		redirect('user/', 'refresh');
+	}
+	
+	function friendship_decline(){
+		$friendship_decline = array('user1' => $this->session->userdata('username'),
+							 		'user2' => $this->input->post('user2')
+							 	   );
+		$this->database_model->remove_friend_request($friendship_decline);
+		redirect('user/', 'refresh');
 	}
 	
 }
