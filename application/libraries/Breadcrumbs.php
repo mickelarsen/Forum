@@ -16,6 +16,7 @@ class Breadcrumbs{
 		$breadcrumbs = "";
 		foreach ( $segs as $seg_key => $seg_value )
 		{
+			
 			$breadcrumbs[] = anchor(base_url() . $this->recursive_bc($CI->uri->segment(1), $seg_key, 1), $seg_value);
 		}
 		echo implode($breadcrumbs,"->");//rtrim($breadcrumbs, " -> ");

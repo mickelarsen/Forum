@@ -15,6 +15,13 @@ class Posts extends CI_Controller{
 		$this->load->view('template', $data);
 	}
 	
+	private function paginate($rows, $per_page){
+		$config['base_url'] = current_url();
+		$config['total_rows'] = $rows;
+		$config['per_page'] = $per_page;
+		$this->pagination->initialize($config);
+	}
+	
 	public function subforum(){
 		$data['current_view'] = 'subforum';
 		$data['subforum'] = $this->database_model->get_subforum();
@@ -26,6 +33,9 @@ class Posts extends CI_Controller{
 		$data['current_view'] = 'category';
 		$data['category'] = $this->database_model->get_category();
 		$data['topics'] = $this->database_model->get_topics();
+		$rows = count($data['topics']);
+		$per_page = 15;
+		$data['paginate'] = $this->paginate($rows, $per_page);
 		$this->load->view('template', $data);
 	}
 	
@@ -47,8 +57,17 @@ class Posts extends CI_Controller{
 	public function topic(){
 		$data['topic'] = $this->database_model->get_topic();
 		$data['topic_responses'] = $this->database_model->get_topic_responses();
-		$data['current_view'] = 'topic';
+		$rows = count($data['topic_responses']);
+		$per_page = 20;
+		$data['paginate'] = $this->paginate($rows, $per_page);
+ 		$data['current_view'] = 'topic';
 		$this->load->view('template', $data);
+	}
+	
+	function lock_topic(){
+		$topic_to_be_locked = $this->uri->segment(3);
+		$this->database_model->lock_topic($topic_to_be_locked);
+		redirect('posts/topic/'.$topic_to_be_locked, 'refresh');
 	}
 	
 	public function new_response(){
@@ -63,5 +82,11 @@ class Posts extends CI_Controller{
 								 );
 		$this->database_model->new_topic_response($topic_response);
 		redirect('posts/topic/'.$topic_response['topic_id'], 'refresh');
+	}
+	
+	function sticky(){
+		$sticky_topic = $this->uri->segment(3);
+		$this->database_model->sticky_topic($sticky_topic);
+		redirect('posts/topic/'.$sticky_topic, 'refresh');
 	}
 }

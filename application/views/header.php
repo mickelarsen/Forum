@@ -25,5 +25,7 @@ if($this->session->userdata('username')){
 	echo form_close();
 }
 
-$this->breadcrumbs->generate_breadcrumbs();
+if($this->uri->segment(1)){
+	$this->breadcrumbs->generate_breadcrumbs();
+}
 echo br(1);

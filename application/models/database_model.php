@@ -153,6 +153,7 @@ class Database_model extends CI_Model{
 	function get_topics(){
 		$category = $this->uri->segment(3);
 		$query = $this->db->where('category_id', $category);
+		$query = $this->db->order_by('sticky', 'desc');
 		$query = $this->db->get('topics');
 		$result = $query->result_array();
 		return $result;
@@ -164,6 +165,18 @@ class Database_model extends CI_Model{
 		$query = $this->db->get('topics');
 		$result = $query->result_array();
 		return $result;
+	}
+	
+	function sticky_topic($sticky){
+		$sticky_topic = array('sticky' => 1);
+		$this->db->where('id', $sticky);
+		$this->db->update('topics', $sticky_topic);
+	}
+	
+	function lock_topic($topic_to_be_locked){
+		$locked_topic = array('locked' => 1);
+		$this->db->where('id', $topic_to_be_locked);
+		$this->db->update('topics', $locked_topic);
 	}
 	
 	function new_topic_response($topic_response){
