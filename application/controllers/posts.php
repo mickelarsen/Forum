@@ -32,10 +32,16 @@ class Posts extends CI_Controller{
 	public function category(){
 		$data['current_view'] = 'category';
 		$data['category'] = $this->database_model->get_category();
-		$data['topics'] = $this->database_model->get_topics();
+		$top_limit = 15;
+		if($this->uri->segment(4)){
+			$bot_limit = $this->uri->segment(4);
+		}else{
+			$bot_limit = 0;
+		}
+		$data['topics'] = $this->database_model->get_topics($top_limit, $bot_limit);
 		$rows = count($data['topics']);
-		$per_page = 15;
-		$data['paginate'] = $this->paginate($rows, $per_page);
+		$per_page = 14;
+		$this->paginate($rows, $per_page);
 		$this->load->view('template', $data);
 	}
 	
@@ -56,10 +62,16 @@ class Posts extends CI_Controller{
 	
 	public function topic(){
 		$data['topic'] = $this->database_model->get_topic();
-		$data['topic_responses'] = $this->database_model->get_topic_responses();
+		$top_limit = 15;
+		if($this->uri->segment(4)){
+			$bot_limit = $this->uri->segment(4);
+		}else{
+			$bot_limit = 0;
+		}
+		$data['topic_responses'] = $this->database_model->get_topic_responses($top_limit, $bot_limit);
 		$rows = count($data['topic_responses']);
 		$per_page = 20;
-		$data['paginate'] = $this->paginate($rows, $per_page);
+		$this->paginate($rows, $per_page);
  		$data['current_view'] = 'topic';
 		$this->load->view('template', $data);
 	}

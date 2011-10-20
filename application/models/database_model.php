@@ -150,9 +150,10 @@ class Database_model extends CI_Model{
 		$this->db->insert('topics', $topic);
 	}
 	
-	function get_topics(){
+	function get_topics($top_limit, $bot_limit){
 		$category = $this->uri->segment(3);
 		$query = $this->db->where('category_id', $category);
+		$query = $this->db->limit($top_limit, $bot_limit);
 		$query = $this->db->order_by('sticky', 'desc');
 		$query = $this->db->get('topics');
 		$result = $query->result_array();
@@ -183,9 +184,10 @@ class Database_model extends CI_Model{
 		$this->db->insert('topic_responses', $topic_response);
 	}
 	
-	function get_topic_responses(){
+	function get_topic_responses($top_limit, $bot_limit){
 		$topic = $this->uri->segment(3);
 		$query = $this->db->where('topic_id', $topic);
+		$query = $this->db->limit($top_limit, $bot_limit);
 		$query = $this->db->get('topic_responses');
 		$result = $query->result_array();
 		return $result;

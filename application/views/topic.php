@@ -16,7 +16,7 @@ echo br(2);
 foreach($topic_responses as $topic_response){
 	
 	echo anchor('user/user_profile/'.$topic_response['user'], $topic_response['user']);
-	echo br(2);
+	echo br(1);
 	echo $topic_response['response'];
 	echo br(2);
 	

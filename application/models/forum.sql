@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Värd: localhost
--- Skapad: 20 oktober 2011 kl 13:05
+-- Skapad: 20 oktober 2011 kl 13:59
 -- Serverversion: 5.1.52
 -- PHP-version: 5.3.5
 
