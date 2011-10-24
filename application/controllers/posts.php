@@ -15,8 +15,8 @@ class Posts extends CI_Controller{
 		$this->load->view('template', $data);
 	}
 	
-	private function paginate($rows, $per_page){
-		$config['base_url'] = current_url();
+	private function paginate($rows, $per_page, $base_url){
+		$config['base_url'] = $base_url;
 		$config['total_rows'] = $rows;
 		$config['per_page'] = $per_page;
 		$this->pagination->initialize($config);
@@ -32,16 +32,15 @@ class Posts extends CI_Controller{
 	public function category(){
 		$data['current_view'] = 'category';
 		$data['category'] = $this->database_model->get_category();
-		$top_limit = 15;
-		if($this->uri->segment(4)){
-			$bot_limit = $this->uri->segment(4);
-		}else{
-			$bot_limit = 0;
-		}
-		$data['topics'] = $this->database_model->get_topics($top_limit, $bot_limit);
+		$per_page = 5;
+		$data['topics'] = $this->database_model->get_topics($per_page, $this->uri->segment(4));
 		$rows = count($data['topics']);
-		$per_page = 14;
-		$this->paginate($rows, $per_page);
+		//$this->paginate($rows, $per_page, base_url().'/posts/category/'.$this->uri->segment(3).'/');
+		$config['base_url'] = base_url().'/posts/category/'.$this->uri->segment(3);
+		$config['total_rows'] = $rows;
+		$config['per_page'] = $per_page;
+		$config['num_links'] = 20;
+		$this->pagination->initialize($config);
 		$this->load->view('template', $data);
 	}
 	

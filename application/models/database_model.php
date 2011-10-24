@@ -153,9 +153,8 @@ class Database_model extends CI_Model{
 	function get_topics($top_limit, $bot_limit){
 		$category = $this->uri->segment(3);
 		$query = $this->db->where('category_id', $category);
-		$query = $this->db->limit($top_limit, $bot_limit);
 		$query = $this->db->order_by('sticky', 'desc');
-		$query = $this->db->get('topics');
+		$query = $this->db->get('topics', $top_limit, $bot_limit);
 		$result = $query->result_array();
 		return $result;
 	}

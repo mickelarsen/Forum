@@ -4,8 +4,9 @@ echo heading($category[0]['name'], 2);
 
 echo br(1);
 
-echo anchor('posts/new_topic/'.$category[0]['id'], 'New topic');
-
+if($this->session->userdata('username')){
+	echo anchor('posts/new_topic/'.$category[0]['id'], 'New topic');
+}
 echo br(2);
 
 foreach($topics as $topic){
