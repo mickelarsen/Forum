@@ -3,7 +3,7 @@
 if($this->session->userdata('username') == $this->uri->segment(3)){
 echo form_open('user/submit_profile');
 
-
+echo 'Hurr';
 echo form_label('Name: ','real_name');
 echo form_input('real_name', $this->session->userdata('real_name'));
 echo br(1);
