@@ -25,6 +25,10 @@ class Database_model extends CI_Model{
 	}
 	
 	function user_login($user){
+		if($this->check_ban($user) == true){
+			echo 'You have been banned.';
+			die;
+		}else
 		$query = $this->db->where('username', $user['username']);
 		$query = $this->db->where('password', $user['password']);
 		$query = $this->db->get('users');
@@ -38,10 +42,26 @@ class Database_model extends CI_Model{
 			return true;
 		}
 		return false;
+		
+	}
+	
+	function check_ban($user){
+		$query = $this->db->where('banned_user', $user['username']);
+		$query = $this->db->get('banned_user');
+		$result = $query->result_array();
+		if($result[0]['banned_user'] == $user['username']){
+			return true;
+		}
+		return false;
 	}
 	
 	function ignore_user(){
 		$this->db->insert('ignore_user');
+	}
+	
+	function moderator_promotion($user_to_be_promoted){
+		$this->db->where('username', $user_to_be_promoted);
+		$this->db->update('users', array('admin' => 1));
 	}
 	
 	function friend_request($friend_request){
@@ -74,12 +94,19 @@ class Database_model extends CI_Model{
 		return $result;
 	}
 	
-	function remove_friend($friendship_end){
-		$this->db->where('user1', $this->session->userdata('username'));
-		$this->db->where('user2', $this->session->userdata('username'));
-		$this->db->where('user2', $friendship_end['user2']);
-		$this->db->where('user1', $friendship_end['user2']);
-		$this->db->delete('friends_list');
+	function remove_friend($friend_to_remove){
+		$query = $this->db->where('user1', $this->session->userdata('username'));
+		$query = $this->db->where('user2', $friend_to_remove);
+		$query = $this->db->delete('friends_list');
+		if($query){
+			$this->db->where('user2', $this->session->userdata('username'));
+			$this->db->where('user1', $friend_to_remove);
+			$this->db->delete('friends_list');
+		}
+	}
+	
+	function ban_user($ban){
+		$this->db->insert('banned_user', $ban);
 	}
 	
 	function update_profile($profile){
@@ -192,4 +219,13 @@ class Database_model extends CI_Model{
 		return $result;
 	}
 	
+	function get_topic_response($response_to_edit){
+		$this->db->where('id', $response_to_edit);
+		$this->db->get('topic_responses');
+	}
+	
+	function edit_response($edited_response){
+		$this->db->where('id', $edited_response['id']);
+		$this->db->update('topic_responses', $edited_response);
+	}
 }

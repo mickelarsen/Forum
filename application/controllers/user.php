@@ -30,6 +30,16 @@ class User extends CI_Controller{
 		}
 	}
 	
+	function moderator_promotion(){
+		if($this->session->userdata('admin') == 1){
+			$user_to_be_promoted = $this->uri->segment(3);
+			$this->database_model->moderator_promotion($user_to_be_promoted);
+			redirect('user/user_profile/'.$user_to_be_promoted, 'refresh');
+		}else{
+			echo 'Ya little rascal';
+		}
+	}
+	
 	public function user_profile(){
 		$data['current_view'] = 'user_profile';
 		$data['friends'] = $this->database_model->get_friends();
@@ -76,18 +86,17 @@ class User extends CI_Controller{
 	
 	function ban_user(){
 		$moderator = array ('admin' => $this->session->userdata('admin'),
-							'id' => $this->session->userdata('id')
+							'username' => $this->session->userdata('username')
 							);
 		if($moderator['admin'] != 1){
 			echo 'The banhammer is too heavy for you.';
 			redirect('user/index','refresh');
 		}
-		$ban_user = array ('user_to_be_banned' => $this->input->post('id'),
-						   'moderator' => $moderator['id'],
-						   'reason_message' => $this->input->post('reason')
+		$ban_user = array ('banned_user' => $this->uri->segment(3),
+						   'moderator' => $moderator['username'],
+						   'reason' => $this->input->post('reason')
 						   );
 		$this->database_model->ban_user($ban_user);
-		$this->database_model->send_message($ban_user);
 		redirect('user/','refresh');
 	}
 	
@@ -149,7 +158,7 @@ class User extends CI_Controller{
 							 'user2' => $this->input->post('user2')
 							 );
 		$this->database_model->create_friendship($friendship);
-		redirect('user/', 'refresh');
+		redirect('user/view_friends', 'refresh');
 	}
 	
 	function friendship_decline(){
@@ -157,7 +166,13 @@ class User extends CI_Controller{
 							 		'user2' => $this->input->post('user2')
 							 	   );
 		$this->database_model->remove_friend_request($friendship_decline);
-		redirect('user/', 'refresh');
+		redirect('user/view_friends', 'refresh');
+	}
+	
+	function remove_friend(){
+		$friend_to_remove = $this->input->post('user2');
+		$this->database_model->remove_friend($friend_to_remove);
+		//redirect('user/user_profile/'.$friend_to_remove, 'refresh');
 	}
 	
 }

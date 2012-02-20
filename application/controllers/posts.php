@@ -40,7 +40,7 @@ class Posts extends CI_Controller{
 		$config['total_rows'] = $rows;
 		$config['per_page'] = $per_page;
 		$config['num_links'] = 20;
-		$this->pagination->initialize($config);
+		//$this->pagination->initialize($config);
 		$this->load->view('template', $data);
 	}
 	
@@ -70,7 +70,7 @@ class Posts extends CI_Controller{
 		$data['topic_responses'] = $this->database_model->get_topic_responses($top_limit, $bot_limit);
 		$rows = count($data['topic_responses']);
 		$per_page = 20;
-		$this->paginate($rows, $per_page);
+		//$this->paginate($rows, $per_page);
  		$data['current_view'] = 'topic';
 		$this->load->view('template', $data);
 	}
@@ -93,6 +93,21 @@ class Posts extends CI_Controller{
 								 );
 		$this->database_model->new_topic_response($topic_response);
 		redirect('posts/topic/'.$topic_response['topic_id'], 'refresh');
+	}
+	
+	function edit_response(){
+		$response_to_edit = $this->uri->segment(3);
+		$data['response'] = $this->database_model->get_topic_response($response_to_edit);
+		$data['current_view'] = 'edit_response';
+		$this->load->view('template', 'refresh');
+	}
+	
+	function update_response(){
+		$updated_response = array('id' => $this->input->post('id'),
+								  'response' => $this->input->post('response')
+								  );
+		$this->database_model->update_response($updated_response);
+		redirect('posts/', 'refresh');
 	}
 	
 	function sticky(){
